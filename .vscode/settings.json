@@ -1,0 +1,40 @@
+{
+    "multiCommand.commands": [
+        {
+            "command": "multiCommand.f11",
+            "sequence": [
+                "workbench.action.files.saveAll",
+                {"command": "workbench.action.terminal.sendSequence",
+                    "args": {"text": "\u000D clear ; LANG=C make meta \u000D"}}
+            ]
+        },
+        {
+            "command": "multiCommand.f12",
+            "sequence": [
+                "workbench.action.files.saveAll",
+                {"command": "workbench.action.terminal.sendSequence",
+                    "args": {"text": "\u000D clear ; LANG=C make all \u000D"}}
+            ]
+        },
+    ],
+
+    "files.exclude": {
+        "**/docs/**":true,
+        "**/bc/**":true,
+    },
+    "files.watcherExclude": {
+        "**/docs/**":true,
+        // "**/bc/**":true,
+    },
+    "files.associations": {
+    },
+
+    "editor.tabSize": 4,
+    "editor.rulers": [80],
+    "workbench.tree.indent": 32,
+    "git.ignoreLimitWarning": true,
+
+    "terminal.integrated.shell.windows": "C:\\msys\\usr\\bin\\bash.exe",
+    "terminal.integrated.shellArgs.windows": ["--login", "-i"],
+    "terminal.integrated.env.windows": {"CHERE_INVOKING": "1"},
+}

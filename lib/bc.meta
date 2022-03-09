@@ -1,0 +1,171 @@
+# circular implementation
+
+MODULE  =  cwd.split[-1]
+TITLE   = 'bytecode interpreter'
+AUTHOR  = 'Dmitry Ponyatov'
+EMAIL   = 'dponyatov@gmail.com'
+YEAR    =  2022
+LICENSE = 'All rights reserved'
+GITHUB  =  https://github.com/ponyatov
+
+for dir in [.vscode bin doc lib src tmp]
+    mkdir dir
+    if dir != .vscode
+        echo '!.gitignore' > '{dir}/.gitignore'
+
+with .gitignore: ins *.log
+
+for json in [settings extensions tasks]
+    touch .vscode/'{json}.json'
+
+for i in [Makefile README.md apt.txt doxy.gen .clang-format]:
+    touch i
+
+for ext in [cpp hpp lex yacc]
+    touch 'src/{MODULE}.{ext}'
+
+for d in [bin tmp]: with '{d}/.gitignore': ins *
+for d in [doc]    : with '{d}/.gitignore': ins [*.pdf *.djvu]
+for d in [src]    : with '{d}/.gitignore': ins *-*/
+
+fn vsmake(key,cmd):
+    json'
+        {
+            "command": "multiCommand.{key}",
+            "sequence": [
+                "workbench.action.files.saveAll",
+                {"command": "workbench.action.terminal.sendSequence",
+                    "args": {"text": "\u000D clear ; LANG=C make {cmd} \u000D"}}
+            ]
+        },
+    '
+
+with .vscode/settings.json:
+    multi = json'
+            "multiCommand.commands": [
+                {vsmake(f11,meta)},
+                {vsmake(f12,all)},
+            ],
+    '
+    files = json'
+            "**/docs/**":true,
+            "**/{MODULE}/**":true,
+    '
+    exclude = json'
+        "files.exclude": {
+            {files}
+        },
+    '
+    watcher = json'
+        "files.watcherExclude": {
+            {files}
+        },
+    '
+    assoc = json'
+        "files.associations": {
+        },
+    '
+    files = json'
+            {exclude}
+            {watcher}
+            {assoc}
+    '
+    editor = json'
+            "editor.tabSize": 4,
+            "editor.rulers": [80],
+            "workbench.tree.indent": 32,
+            "git.ignoreLimitWarning": true,
+    '
+    msys = json'
+            "terminal.integrated.shell.windows": "C:\\msys\\usr\\bin\\bash.exe",
+            "terminal.integrated.shellArgs.windows": ["--login", "-i"],
+            "terminal.integrated.env.windows": {"CHERE_INVOKING": "1"},
+    '
+    json'
+        {
+            {multi}
+            {files}
+            {editor}
+            {msys}
+        }
+    '
+
+with .clang-format:
+    '
+        # https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+
+        BasedOnStyle: Google
+        IndentWidth: 4
+        ColumnLimit: 80
+
+        SortIncludes: false
+
+        AllowShortBlocksOnASingleLine: Always
+        AllowShortFunctionsOnASingleLine: All
+
+        Language: Cpp
+    '
+
+with Makefile:
+    var = mk'
+        MODULE = $(notdir $(CURDIR))
+    '
+    tool = mk'
+        CF = clang-format-11 -style=file -i
+    '
+    src = mk'
+        C = src/$(MODULE).cpp tmp/$(MODULE).parser.cpp tmp/$(MODULE).lexer.cpp
+        H = src/$(MODULE).hpp tmp/$(MODULE).parser.hpp
+    '
+    cfg = mk'
+        CFLAGS = -O0 -g2 -Isrc -Itmp
+    '
+    all = mk'
+        all: bin/$(MODULE)
+            $^ $@
+            $(MAKE) tmp/format_cpp
+
+        meta: bin/$(MODULE) lib/$(MODULE).meta
+            $^
+            $(MAKE) tmp/format_cpp
+    '
+    format = mk'
+        tmp/format_cpp: $(C) $(H)
+            $(CF) $? && touch $@
+    '
+    rule = mk'
+        bin/$(MODULE): $(C) $(H)
+            $(CXX) $(CFLAGS) -o $@ $(C) $(L)
+        tmp/%.lexer.cpp: src/%.lex
+            flex -o $@ $<
+        tmp/%.parser.cpp: src/%.yacc
+            bison -o $@ $<
+    '
+    mk'
+        {var}
+        {tool}
+        {src}
+        {cfg}
+        {all}
+        {format}
+        {rule}
+        {install}
+        {merge}
+    '
+
+with apt.txt
+    txt'
+        git make curl
+        code meld doxygen
+        g++ flex bison
+    '
+
+with README.md
+    md'
+        #  {MODULE}
+        ## {TITLE}}
+
+        (c) {AUTHOR} <<{EMAIL}>> {YEAR} {LICENSE}
+
+        github: {GITHUB}/{MODULE}
+    '
