@@ -1,4 +1,4 @@
-#  bc
+#  ![logo](doc/logo.png) bc
 ## bytecode interpreter
 
 (c) Dmitry Ponyatov <<dponyatov@gmail.com>> 2020 All rights reserved
