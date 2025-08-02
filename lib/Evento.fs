@@ -127,7 +127,7 @@ let lib:unit = //
 
 let cpp: unit = //
     mkdir "inc"
-    File.WriteAllText ($"inc/{app}.hpp","""#pragma once
+    File.WriteAllText ($"inc/{app}.hpp",$"#pragma once
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -142,8 +142,9 @@ extern char *yytext;
 extern char *yyfile;
 extern FILE *yyin;
 extern int yyparse();
-extern void yyerror(char *msg);
-""")
+extern void yyerror(const char *msg);
+#include \"{app}.yacc.hpp\"
+")
     mkdir "src"
     let include = $"#include \"{app}.hpp\""
     File.WriteAllText ($"src/{app}.cpp",include + """
@@ -183,7 +184,7 @@ char* yyfile = nullptr;
 syntax:
 
 %%
-void yyerror(char *msg) {
+void yyerror(const char *msg) {
     fprintf(stderr, "\n\n%s:%i %s [%s]\n\n", yyfile, yylineno, msg, yytext);
     exit(-1);
 }

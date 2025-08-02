@@ -16,3 +16,10 @@ int main(int argc, char *argv[]) {
 void arg(int argc, char *argv) {  //
     fprintf(stderr, "arg[%i] = <%s>\n", argc, argv);
 }
+
+std::map<std::string, addr> label;
+std::map<std::string, std::vector<addr>> forward;
+
+byte M[Msz];
+addr Cp = 0;
+addr Ip = 0;

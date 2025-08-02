@@ -19,7 +19,7 @@
             "label"          : "doxy: gen",
             "type"           : "shell",
             "group"          : {"kind": "build", "isDefault": true },
-            "dependsOn"      : "CMake: build",
+            // "dependsOn"      : "CMake: build",
             "command"        : "make doxy",
             "problemMatcher" : [],
             "presentation"   : {"showReuseMessage": false, "focus": true, "reveal": "silent", "close": false}
