@@ -86,7 +86,6 @@ let giti:unit = //
 *.exe
 node_modules/
 /target/
-/obj/
 !.gitignore
 """)
 
