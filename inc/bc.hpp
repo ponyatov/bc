@@ -26,8 +26,8 @@
 /// @defgroup main main
 /// @ingroup core
 /// @{
-extern int main(int argc, char *argv[]);
-extern void arg(int argc, char *argv);
+extern int main(int argc, char *argv[]);  ///< system entry point
+extern void arg(int argc, char *argv);    ///< print command line argument
 /// @}
 
 /// @defgroup vm vm
@@ -55,14 +55,43 @@ extern cell D[Dsz];  ///< data stack
 extern byte Dp;      ///< @ref D pointer (@ref D)
 /// @}
 
+/// @defgroup command command
+/// @ingroup vm
+/// @{
+
+/// @brief command opcode (single byte)
+enum class Op {
+    nop = 0x00,   ///< 0x00 `( -- )` do nothing
+    halt = 0xFF,  ///< 0xFF `( -- )` stop system
+
+    jmp = 0x01,   ///< 0x01 `( -- )` unconditional jump
+    jnz = 0x02,   ///< 0x02 `( -- )` conditional jump
+    call = 0x03,  ///< 0x03 `(R: -- addr )` nested call
+    ret = 0x04,   ///< 0x04 `(R: addr -- )` return from @ref Op::call
+    let = 0x05,   ///< 0x05 `( -- n )` @ref cell literal
+};
+
+extern void nop();   ///< @ref Op::nop
+extern void halt();  ///< @ref Op::halt
+
+/// @}
+
+/// @defgroup compiler compiler
+/// @ingroup core
+/// @{
 extern std::map<std::string, addr> label;                 ///< known labels
 extern std::map<std::string, std::vector<addr>> forward;  ///< forward refs
+/// @}
 
-extern int yylex();
-extern int yylineno;
-extern char *yytext;
-extern char *yyfile;
-extern FILE *yyin;
-extern int yyparse();
-extern void yyerror(const char *msg);
+/// @defgroup parser parser
+/// @ingroup compiler
+/// @{
+extern int yylex();                    ///< lexer (flex)
+extern int yylineno;                   ///< current line
+extern char *yytext;                   ///< lexeme value
+extern char *yyfile;                   ///< current file name
+extern FILE *yyin;                     ///< current file handler
+extern int yyparse();                  ///< syntax parser (bison)
+extern void yyerror(const char *msg);  ///< syntax error callback
 #include "bc.yacc.hpp"
+/// @}
